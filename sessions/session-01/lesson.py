@@ -58,7 +58,23 @@ LIBRARY = {
     "c * t^2": lambda t: t ** 2,
     "c * t^3": lambda t: t ** 3,
     "c * exp(t)": np.exp,
+    "c * exp(-t)": lambda t: np.exp(-np.asarray(t, float)),
 }
+
+
+# %% [markdown]
+# ## A second law: cooling tea
+# In this synthetic example, tea starts 60 degrees C above room temperature. We record
+# its temperature excess (above room temperature) every minute; this example follows
+# the simple exponential model excess = c * exp(-t).
+
+# %%
+COOLING_T_OBS = np.array([0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0])  # minutes
+
+
+def cooling_data():
+    """Synthetic tea temperature above room temperature (degrees C) at COOLING_T_OBS."""
+    return COOLING_T_OBS.copy(), 60.0 * np.exp(-COOLING_T_OBS)
 
 
 def fit_c(shape, d):
@@ -134,6 +150,20 @@ if __name__ == "__main__":
     ax2.grid(alpha=0.3)
     fig2.tight_layout()
     fig2.savefig(OUT / "error_vs_exponent.png", dpi=120)
+
+    cooling_t, excess = cooling_data()
+    cooling_c, _ = fit_c(LIBRARY["c * exp(-t)"](cooling_t), excess)
+    cooling_tt = np.linspace(0, 3.0, 200)
+    fig3, ax3 = plt.subplots(figsize=(6, 4))
+    ax3.plot(cooling_t, excess, "ko", label="synthetic tea data")
+    ax3.plot(cooling_tt, cooling_c * LIBRARY["c * exp(-t)"](cooling_tt), label="c * exp(-t)")
+    ax3.set_xlabel("time t (minutes)")
+    ax3.set_ylabel("temperature above room temperature (°C)")
+    ax3.set_title("Cooling tea follows an exponential shape")
+    ax3.grid(alpha=0.3)
+    ax3.legend()
+    fig3.tight_layout()
+    fig3.savefig(OUT / "cooling_tea.png", dpi=120)
     print("saved figures in", OUT)
 
 # %% [markdown]
