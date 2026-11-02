@@ -19,3 +19,16 @@ def test_session(n, script):
     assert res.returncode == 0, res.stdout + res.stderr
     if script == "checkpoint.py":
         assert "PASS" in res.stdout
+
+
+def test_session_1_cooling_law():
+    import importlib.util
+
+    path = ROOT / "sessions" / "session-01" / "lesson.py"
+    spec = importlib.util.spec_from_file_location("lesson1_cooling", path)
+    lesson = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(lesson)
+    assert "c * exp(-t)" in lesson.LIBRARY, f"missing cooling candidate: {list(lesson.LIBRARY)}"
+    t, temperature = lesson.cooling_data()
+    c, mse = lesson.fit_c(lesson.LIBRARY["c * exp(-t)"](t), temperature)
+    assert abs(c - 60.0) < 1e-12 and mse < 1e-20

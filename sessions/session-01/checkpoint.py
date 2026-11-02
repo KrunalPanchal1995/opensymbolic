@@ -38,6 +38,10 @@ def run_checks(L):
                    float(L.fall_distance(0.0)) == 0.0 and abs(float(L.fall_distance(2.0, 1.62)) - 3.24) < 1e-9))
     checks.append(("the measured data differ from the law by at most 3 percent",
                    float(np.max(np.abs(d / L.fall_distance(L.T_OBS) - 1))) <= 0.03 + 1e-12))
+    cooling_t, excess = L.cooling_data()
+    cooling_c, cooling_mse = L.fit_c(L.LIBRARY["c * exp(-t)"](cooling_t), excess)
+    checks.append(("cooling tea: synthetic temperature excess fits c * exp(-t) with c = 60 °C and zero error",
+                   abs(cooling_c - 60.0) < 1e-12 and cooling_mse < 1e-20))
     return checks
 
 
