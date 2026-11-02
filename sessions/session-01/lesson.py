@@ -65,7 +65,7 @@ LIBRARY = {
 # %% [markdown]
 # ## A second law: cooling tea
 # In this synthetic example, tea starts 60 degrees C above room temperature. We record
-# its temperature excess (above room temperature) every minute; this example follows
+# its temperature excess (above room temperature) every half minute; this example follows
 # the simple exponential model excess = c * exp(-t).
 
 # %%
